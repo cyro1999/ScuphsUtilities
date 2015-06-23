@@ -39,11 +39,6 @@ commands:
         description: Kick a player
         aliases: utilskick
         permission: utils.kick
-    report:
-        usage: /report <player> <reason>
-        description: report a player
-        aliases: []
-        permission: utils.report
     warn:
         usage: /warn <player> <reason>
         description: Warn a player
