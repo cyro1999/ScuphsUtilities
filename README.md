@@ -1,5 +1,5 @@
 # ScuphUtils
-Plugin for AntCraft
+Plugin for Any Server that wants to use it!
 
 
 # Developers
