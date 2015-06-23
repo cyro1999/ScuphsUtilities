@@ -9,6 +9,11 @@ commands:
         description: Info about the plugin and server
         aliases: []
         permission: utils.info
+    notesforstaff:
+        usage: /<command>
+        description: Notes that might help the staff get the plugin working on their side.
+        aliases: []
+        permission: utils.notesforstaff
     admins:
         usage: /<command>
         description: Find the server's admins
