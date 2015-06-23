@@ -1,0 +1,15 @@
+# Welcome to the config!!
+
+#Your server's name, pretty self-explanatory...
+server-name: Here
+# Example for Admins: (RankGoesHere)UserName, so like, (Owner)Scuph, (Admin)Ryan, (Admin)Alex
+admins: ScuphGamingUK
+# Your ban appeal message, You can set it to 'You cannot Appeal' if you don't have the option for ban appeals (applying for an unban)
+# Example: Appeal-Message: Appeal at http://mywebsite.com (the thing you put for website below)
+Appeal-Message: Appeal at http://example.com.
+# Your website/forum
+website: http://example.com
+# The server owner's IGN
+owner: Player
+# The server's rule command, find the rules with this command
+rule-command: /rules
