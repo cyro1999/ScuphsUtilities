@@ -11,7 +11,7 @@ commands:
         permission: utils.info
     admins:
         usage: /<command>
-        description: Fin the server's admins
+        description: Find the server's admins
         aliases: administrators
         permission: utils.admins
     ban:
