@@ -1,6 +1,6 @@
 package com.scuph.scuphsutilities.commands;
 
-import com.scuph.scuphsutilities.ScuphsUtilities;
+import com.scuph.scuphsutilities.ScuphUtils;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -9,7 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(source = SourceType.PLAYER, permission = "utils.apply")
-public class Command_apply extends BukkitCommand<ScuphsUtilities> {
+public class Command_apply extends BukkitCommand<ScuphUtils> {
 
     @Override
     public boolean run(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -17,5 +17,5 @@ public class Command_apply extends BukkitCommand<ScuphsUtilities> {
         sender.sendMessage(ChatColor.RED + "Read more information at" + plugin.getConfig().getString("website"));
         return true;
     }
-    
+
 }

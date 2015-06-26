@@ -1,6 +1,6 @@
 package com.scuph.scuphsutilities.commands;
 
-import com.scuph.scuphsutilities.ScuphsUtilities;
+import com.scuph.scuphsutilities.ScuphUtils;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandPermissions(source = SourceType.PLAYER, permission = "utils.requesthelp")
-public class Command_requesthelp extends BukkitCommand<ScuphsUtilities> {
+public class Command_requesthelp extends BukkitCommand<ScuphUtils> {
 
     @Override
     public boolean run(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -18,5 +18,5 @@ public class Command_requesthelp extends BukkitCommand<ScuphsUtilities> {
         player.chat(ChatColor.UNDERLINE + "I need help! Can a staff member assist me?");
         return true;
     }
-    
+
 }

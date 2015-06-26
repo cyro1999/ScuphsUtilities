@@ -1,17 +1,16 @@
 package com.scuph.scuphsutilities.commands;
 
-import com.scuph.scuphsutilities.ScuphsUtilities;
+import com.scuph.scuphsutilities.ScuphUtils;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
-import net.pravian.bukkitlib.config.YamlConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 @CommandPermissions(source = SourceType.ANY, permission = "utils.notesforstaff")
-public class Command_notesforstaff extends BukkitCommand<ScuphsUtilities> {
-    
+public class Command_notesforstaff extends BukkitCommand<ScuphUtils> {
+
     @Override
     public boolean run(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         sender.sendMessage(ChatColor.GREEN + "Here are some notes from me, ScuphGamingUK, the plugin creator, to you.");
@@ -25,5 +24,5 @@ public class Command_notesforstaff extends BukkitCommand<ScuphsUtilities> {
         sender.sendMessage(ChatColor.RED + "Now that you read these notes, you should be good!");
         return true;
     }
-    
+
 }
