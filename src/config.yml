@@ -1,15 +1,22 @@
-# Welcome to the config!!
+##
+## ScuphUtils 2.0 Configuration
+##
 
-#Your server's name, pretty self-explanatory...
-server-name: Here
-# Example for Admins: (RankGoesHere)UserName, so like, (Owner)Scuph, (Admin)Ryan, (Admin)Alex
-admins: ScuphGamingUK
-# Your ban appeal message, You can set it to 'You cannot Appeal' if you don't have the option for ban appeals (applying for an unban)
-# Example: Appeal-Message: Appeal at http://mywebsite.com (the thing you put for website below)
-Appeal-Message: Appeal at http://example.com.
-# Your website/forum
-website: http://example.com
-# The server owner's IGN
-owner: Player
-# The server's rule command, find the rules with this command
-rule-command: /rules
+server:
+  # This server's name
+  name: SomeServer
+
+  # This server's owner
+  owner: SomePlayer
+
+  # This server's website
+  website: http://example.com
+
+
+banning:
+
+  # Ban appeal message. If your server doesn't support appeals, set to "none"
+  appeal_url: http://some-appeal-url.com
+
+
+admins: [ScuphGamingUK, Prozza]
