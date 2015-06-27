@@ -1,6 +1,6 @@
 name: ScuphUtils
 version: 2.0
-main: com.scuph.scuphsutilities.ScuphUtils
+main: com.scuph.scuphutils.ScuphUtils
 description: Utility plugin for LulzCraft!
 authors: [Scuph, Prozza]
 commands:
@@ -20,10 +20,20 @@ commands:
         aliases: administrators
         permission: utils.admins
     ban:
-        usage: /ban <player> <reason>
-        description: Ban a player
+        usage: /<command> [-o] <player> <reason>
+        description: Bans a player
         aliases: utilsban
         permission: utils.ban
+    banip:
+        usage: /<command> <<player> | <ip>> <reason>
+        description: Bans a player IP
+        aliases: utilsbanip
+        permission: utils.banip
+    unban:
+        usage: /<command> <player>
+        description: Unbans a player
+        aliases: utilsunban
+        permission: utils.unban
     apply:
         usage: /<command>
         description: info on how to apply

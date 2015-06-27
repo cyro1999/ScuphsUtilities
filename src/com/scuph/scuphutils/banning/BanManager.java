@@ -2,15 +2,20 @@ package com.scuph.scuphutils.banning;
 
 import com.scuph.scuphutils.util.AbstractService;
 import com.scuph.scuphutils.ScuphUtils;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import net.pravian.bukkitlib.config.YamlConfig;
 import net.pravian.bukkitlib.util.FileUtils;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 public class BanManager extends AbstractService {
 
@@ -40,6 +45,69 @@ public class BanManager extends AbstractService {
         saveAll();
     }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        Ban ban = uuidBans.get(event.getPlayer().getUniqueId());
+        if (ban != null) {
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ban.getKickMessage());
+            return;
+        }
+
+        ban = ipBans.get(event.getRealAddress().getHostAddress().trim());
+        if (ban != null) {
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ban.getKickMessage());
+        }
+    }
+
+    public boolean isBanned(UUID uuid) {
+        return uuidBans.containsKey(uuid);
+    }
+
+    public boolean isBanned(String ip) {
+        return ipBans.containsKey(ip);
+    }
+
+    public Ban getBan(String id) {
+        id = id.toLowerCase();
+        for (Ban ban : rawBans) {
+            if (ban.getId().equals(id)) {
+                return ban;
+            }
+        }
+        return null;
+    }
+
+    public boolean isIdBanned(String id) {
+        return getBan(id) != null;
+    }
+
+    public boolean unbanId(String id) {
+
+        if (getBan(id) == null) {
+            return false;
+        }
+
+        Set<Ban> bans = new HashSet<>(rawBans);
+        for (Ban ban : bans) {
+            if (!ban.getId().equals(id)) {
+                continue;
+            }
+
+            final List<String> ips = new ArrayList<>(ban.getIps());
+            for (String ip : ips) {
+                unban(ip, false);
+            }
+
+            if (ban.getType() == BanType.UUID) {
+                unban(ban.getUuid(), false);
+            }
+        }
+
+        reparseBans();
+        saveAll();
+        return true;
+    }
+
     public boolean addBan(Ban ban) {
         return addBan(ban, true);
     }
@@ -62,6 +130,10 @@ public class BanManager extends AbstractService {
     }
 
     public boolean unban(UUID uuid) {
+        return unban(uuid, true);
+    }
+
+    public boolean unban(UUID uuid, boolean save) {
         Iterator<Ban> bans = rawBans.iterator();
         while (bans.hasNext()) {
             final Ban ban = bans.next();
@@ -77,12 +149,15 @@ public class BanManager extends AbstractService {
             removeBan(ban, false);
 
             // Unban all IP bans that may match
-            for (String ip : ban.getIps()) {
+            final List<String> ips = new ArrayList<>(ban.getIps());
+            for (String ip : ips) {
                 unban(ip, false);
             }
 
-            reparseBans();
-            saveAll();
+            if (save) {
+                reparseBans();
+                saveAll();
+            }
             return true;
         }
 
@@ -102,11 +177,8 @@ public class BanManager extends AbstractService {
                 continue;
             }
 
-            ban.removeIp(ip);
-
-            if (ban.getType() == BanType.IP && !ban.hasIps()) {
-                removeBan(ban, false);
-            }
+            ban.clearIps();
+            removeBan(ban, false);
         }
 
         if (save) {
@@ -150,7 +222,7 @@ public class BanManager extends AbstractService {
                     continue;
                 }
 
-                final Ban ban = new Ban(BanType.UUID, id);
+                final Ban ban = new Ban(BanType.UUID, id.toLowerCase());
                 ban.loadFrom(uuidSection.getConfigurationSection(id));
 
                 if (!ban.isValid()) {
@@ -172,7 +244,7 @@ public class BanManager extends AbstractService {
                     continue;
                 }
 
-                final Ban ban = new Ban(BanType.IP, id);
+                final Ban ban = new Ban(BanType.IP, id.toLowerCase());
                 ban.loadFrom(section.getConfigurationSection(id));
 
                 if (!ban.isValid()) {
@@ -193,10 +265,14 @@ public class BanManager extends AbstractService {
         ConfigurationSection ipSection = config.createSection("ips");
 
         for (Ban ban : rawBans) {
+            if (!ban.isValid()) {
+                continue;
+            }
+
             if (ban.getType() == BanType.UUID) {
                 ban.saveTo(uuidSection.createSection(ban.getId()));
             } else if (ban.getType() == BanType.IP) {
-                ban.saveTo(uuidSection.createSection(ban.getId()));
+                ban.saveTo(ipSection.createSection(ban.getId()));
             }
         }
 
@@ -206,12 +282,18 @@ public class BanManager extends AbstractService {
     private void reparseBans() {
         ipBans.clear();
         uuidBans.clear();
-        for (Ban ban : rawBans) {
-            parseBan(ban);
+
+        Iterator<Ban> bans = rawBans.iterator();
+        while (bans.hasNext()) {
+            parseBan(bans.next());
         }
     }
 
     private void parseBan(Ban ban) {
+        if (!ban.isValid()) {
+            return;
+        }
+
         // All bans may include IPs
         for (String ip : ban.getIps()) {
             ipBans.put(ip, ban);

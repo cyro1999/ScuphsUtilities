@@ -1,42 +1,70 @@
 package com.scuph.scuphutils.command;
 
 import com.scuph.scuphutils.ScuphUtils;
+import com.scuph.scuphutils.banning.Ban;
+import com.scuph.scuphutils.banning.BanType;
+import com.scuph.scuphutils.util.Util;
+import java.util.Arrays;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
+import net.pravian.bukkitlib.util.IpUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-@CommandPermissions(source = SourceType.PLAYER, permission = "utils.ban")
+@CommandPermissions(source = SourceType.ANY, permission = "utils.ban")
 public class Command_ban extends BukkitCommand<ScuphUtils> {
 
     @Override
     public boolean run(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (args.length < 3) {
+        final boolean override = args.length >= 1 && args[0].equals("-o");
+        if (override) {
+            args = Arrays.copyOfRange(args, 1, args.length); // Shift one
+        }
+
+        if (args.length < 2) {
             return showUsage();
         }
 
-        final Player player = getPlayer(args[0]);
+        final OfflinePlayer player = getOfflinePlayer(args[0]);
 
-        if (player == null) {
-            sender.sendMessage(ChatColor.RED + "Player not found.\nPlease review arguments.");
+        if (player == null && !override) {
+            msg(ChatColor.RED + "Could not find player. Use -o to override.");
+            return true;
         }
 
-        String banReason = StringUtils.join(ArrayUtils.subarray(args, 1, args.length), " ");
+        if (player != null && plugin.bm.isBanned(player.getUniqueId())) {
+            msg(ChatColor.RED + "That player is already banned!");
+            return true;
+        }
 
-        Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning: " + ChatColor.YELLOW + player.getName() + ChatColor.RED + "\nReason - " + ChatColor.YELLOW + banReason);
+        final String id = player == null ? args[0] : player.getName();
+        final String reason = StringUtils.join(ArrayUtils.subarray(args, 1, args.length), " ");
 
-        player.kickPlayer("You have been banned\nReason: " + ChatColor.RED + banReason + ChatColor.RED + "\nBanned by ~ " + ChatColor.YELLOW + sender.getName() + "\n" + ChatColor.RED + plugin.getConfig().getString("Appeal-Message"));
-        Bukkit.getBanList(Type.NAME).addBan(player.getName(), ChatColor.RED + banReason + ChatColor.RED + "\nBanned by ~ " + ChatColor.YELLOW + sender.getName() + plugin.getConfig().getString("Appeal-Message"), null, "source");
+        Util.adminMessage(sender, "Banning " + id + " for " + reason, true);
 
-        sender.sendMessage(ChatColor.GRAY + "Player successfully banned");
+        final Ban ban = new Ban(BanType.UUID, id);
+        ban.setBy(sender.getName());
+        ban.setReason(reason);
+        ban.setUuid(player == null ? Bukkit.getOfflinePlayer(id).getUniqueId() : player.getUniqueId());
+        if (player != null && player.isOnline()) {
+            ban.addIp(IpUtils.getIp(player.getPlayer()));
+        }
 
+        if (!plugin.bm.addBan(ban)) {
+            msg(ChatColor.RED + "Could not ban player! (Is the player already banned?)");
+        }
+
+        if (player != null && player.isOnline()) {
+            player.getPlayer().kickPlayer(ban.getKickMessage());
+        }
+
+        msg(ChatColor.GRAY + "Banned player " + id);
         return true;
     }
 

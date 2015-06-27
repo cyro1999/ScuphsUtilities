@@ -1,5 +1,7 @@
 package com.scuph.scuphutils.banning;
 
+import com.scuph.scuphutils.ConfigEntries;
+import com.scuph.scuphutils.ScuphUtils;
 import com.scuph.scuphutils.util.ConfigLoadable;
 import com.scuph.scuphutils.util.ConfigSaveable;
 import com.scuph.scuphutils.util.Validatable;
@@ -7,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,9 +20,9 @@ import org.bukkit.configuration.ConfigurationSection;
 public class Ban implements ConfigLoadable, ConfigSaveable, Validatable {
 
     @Getter
-    private final BanType type = null;
+    private final BanType type;
     @Getter
-    private final String id = null;
+    private final String id;
     //
     private final List<String> ips;
     @Getter
@@ -36,6 +39,8 @@ public class Ban implements ConfigLoadable, ConfigSaveable, Validatable {
     private Date expiryDate = null;
 
     public Ban(BanType type, String id) {
+        this.type = type;
+        this.id = id.toLowerCase();
         this.ips = new ArrayList<>();
     }
 
@@ -85,11 +90,14 @@ public class Ban implements ConfigLoadable, ConfigSaveable, Validatable {
     }
 
     public String getKickMessage() {
+        final String appealUrl = ScuphUtils.plugin.config.getString(ConfigEntries.BANNING_APPEAL_URL);
+
         return ChatColor.RED
-                + "Your " + (type == BanType.IP ? "IP-Address" : "UUID") + " is banned from this server.\n"
-                + "Reason: " + reason + "\n"
-                + "Expires: " + TimeUtils.parseDate(expiryDate) + "\n"
-                + "Banned by: " + by;
+                + "You" + (type == BanType.UUID ? " are" : "r IP-Address is") + " banned from this server.\n"
+                + (reason == null ? "" : "Reason: " + reason + "\n")
+                + (expiryDate == null ? "" : "Expires: " + TimeUtils.parseDate(expiryDate) + "\n")
+                + (by == null ? "" : "Banned by: " + by + "\n")
+                + (appealUrl.equals("none") ? "" : "You may appeal your ban at " + appealUrl);
     }
 
     public boolean hasExpiryDate() {
@@ -123,8 +131,8 @@ public class Ban implements ConfigLoadable, ConfigSaveable, Validatable {
 
     @Override
     public void saveTo(ConfigurationSection config) {
-        config.set("uuid", uuid.toString());
-        config.set("ips", ips.isEmpty() ? null : ips);
+        config.set("uuid", (uuid == null ? null : uuid.toString()));
+        config.set("ips", (ips.isEmpty() ? null : ips));
         config.set("by", by);
         config.set("reason", reason);
         config.set("expires", TimeUtils.parseDate(expiryDate));
@@ -137,6 +145,32 @@ public class Ban implements ConfigLoadable, ConfigSaveable, Validatable {
                 // See BanType.java
                 && ((type == BanType.UUID && uuid != null)
                 || (type == BanType.IP && uuid == null && hasIps()));
-
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 61 * hash + Objects.hashCode(this.ips);
+        hash = 61 * hash + Objects.hashCode(this.uuid);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Ban other = (Ban) obj;
+        if (!Objects.equals(this.ips, other.ips)) {
+            return false;
+        }
+        if (!Objects.equals(this.uuid, other.uuid)) {
+            return false;
+        }
+        return true;
+    }
+
 }
