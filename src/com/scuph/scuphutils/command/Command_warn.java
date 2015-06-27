@@ -1,6 +1,6 @@
-package com.scuph.scuphsutilities.commands;
+package com.scuph.scuphutils.command;
 
-import com.scuph.scuphsutilities.ScuphUtils;
+import com.scuph.scuphutils.ScuphUtils;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;
@@ -12,8 +12,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandPermissions(source = SourceType.PLAYER, permission = "utils.kick")
-public class Command_kick extends BukkitCommand<ScuphUtils> {
+@CommandPermissions(source = SourceType.PLAYER, permission = "utils.warn")
+public class Command_warn extends BukkitCommand<ScuphUtils> {
 
     @Override
     public boolean run(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -27,13 +27,13 @@ public class Command_kick extends BukkitCommand<ScuphUtils> {
             sender.sendMessage(ChatColor.RED + "Player not found.\nPlease review arguments.");
         }
 
-        String kickReason = StringUtils.join(ArrayUtils.subarray(args, 1, args.length), " ");
+        String warnReason = StringUtils.join(ArrayUtils.subarray(args, 1, args.length), " ");
 
-        Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Kicking: " + player.getName() + " Reason: " + kickReason);
+        Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Warning: " + player.getName() + " Reason: " + warnReason);
 
-        player.kickPlayer(ChatColor.RED + "You have been kicked\nReason: " + ChatColor.YELLOW + kickReason + ChatColor.RED + "\nKicked by ~ " + ChatColor.YELLOW + sender.getName());
+        player.sendMessage(ChatColor.RED + "You have been warned!" + ChatColor.RED + "\nReason: " + ChatColor.YELLOW + warnReason + ChatColor.RED + "\nWarned by ~ " + ChatColor.YELLOW + sender.getName());
 
-        sender.sendMessage(ChatColor.GRAY + "Player successfully kicked");
+        sender.sendMessage(ChatColor.GRAY + "Player successfully warned");
 
         return true;
     }

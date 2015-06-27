@@ -1,6 +1,6 @@
-package com.scuph.scuphsutilities.listeners;
+package com.scuph.scuphutils.listener;
 
-import com.scuph.scuphsutilities.ScuphUtils;
+import com.scuph.scuphutils.ScuphUtils;
 import net.pravian.bukkitlib.config.YamlConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

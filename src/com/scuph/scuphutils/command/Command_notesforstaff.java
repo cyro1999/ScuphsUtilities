@@ -1,6 +1,6 @@
-package com.scuph.scuphsutilities.commands;
+package com.scuph.scuphutils.command;
 
-import com.scuph.scuphsutilities.ScuphUtils;
+import com.scuph.scuphutils.ScuphUtils;
 import net.pravian.bukkitlib.command.BukkitCommand;
 import net.pravian.bukkitlib.command.CommandPermissions;
 import net.pravian.bukkitlib.command.SourceType;

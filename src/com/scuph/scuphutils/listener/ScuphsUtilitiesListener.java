@@ -1,4 +1,4 @@
-package com.scuph.scuphsutilities.listeners;
+package com.scuph.scuphutils.listener;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
